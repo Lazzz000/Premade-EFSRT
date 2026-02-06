@@ -1,0 +1,42 @@
+﻿@{
+    // Asegúrate de que esta línea esté presente para que use el layout principal.
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Dashboard";
+}
+
+<div class="jumbotron mt-4 p-4 bg-light rounded-3">
+    <h1>Bienvenido al Sistema JOTA TECH</h1>
+    <p class="lead">Dashboard de Ventas y Gestión de Inventario.</p>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card text-white bg-primary mb-3">
+            <div class="card-header">Total Productos</div>
+            <div class="card-body">
+                <h4 class="card-title">@ViewBag.TotalProductos</h4>
+                <p class="card-text">Total de artículos activos.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card text-white bg-success mb-3">
+            <div class="card-header">Venta Total del Mes</div>
+            <div class="card-body">
+                <h4 class="card-title">@ViewBag.VentaTotalMes</h4>
+                <p class="card-text">Suma total de ventas en el mes actual.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card text-white bg-warning mb-3">
+            <div class="card-header">Boletas Emitidas (Mes)</div>
+            <div class="card-body">
+                <h4 class="card-title">@ViewBag.BoletasMes</h4>
+                <p class="card-text">Cantidad de comprobantes generados en el mes actual.</p>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,241 @@
+﻿@model JOTATECH_SOLUCIONES.Models.Venta
+@{
+    ViewBag.Title = "Registrar Nueva Venta";
+}
+
+<h2 class="mt-4">@ViewBag.Title</h2>
+<hr />
+
+<div class="card shadow mb-4">
+    <div class="card-header bg-secondary text-white">
+        Búsqueda de Producto
+    </div>
+    <div class="card-body">
+        <div class="input-group mb-3">
+            <input type="text" id="txtCodigoProducto" class="form-control" placeholder="Ingrese Código de Producto">
+            <button class="btn btn-primary" type="button" id="btnBuscarProducto">Buscar</button>
+        </div>
+        <div id="mensajeBusqueda" class="text-danger"></div>
+    </div>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-header bg-info text-white">
+        Detalle de Venta
+    </div>
+    <div class="card-body">
+        <table class="table table-striped" id="tablaDetalle">
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Descripción</th>
+                    <th>Precio Unitario</th>
+                    <th>Cantidad</th>
+                    <th>Subtotal</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="row justify-content-end">
+    <div class="col-md-4">
+        <div class="card">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item d-flex justify-content-between">
+                    <strong>TOTAL A PAGAR:</strong>
+                    <span id="lblTotalPagar" class="text-success" style="font-size: 1.25rem;">S/ 0.00</span>
+                </li>
+            </ul>
+        </div>
+        <div class="d-grid mt-3">
+            <button class="btn btn-success" type="button" id="btnRegistrarVenta">
+                Registrar Venta
+            </button>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+    var listaProductosVenta = []; // Lista para almacenar los productos en el carrito
+
+    // Función que se ejecuta al iniciar la página
+    $(document).ready(function () {
+
+        // ----------------------------------------------------
+        // 1. LÓGICA DE BÚSQUEDA DE PRODUCTO (AJAX)
+        // ----------------------------------------------------
+        $("#btnBuscarProducto").on("click", function () {
+            var codigo = $("#txtCodigoProducto").val().trim();
+            if (codigo == "") {
+                $("#mensajeBusqueda").text("Debe ingresar un código.");
+                return;
+            }
+
+            // Llamada AJAX al controlador
+            $.ajax({
+                url: "@Url.Action("BuscarProducto", "Venta")",
+                type: "POST",
+                data: { codigo: codigo },
+                dataType: "json",
+                success: function (response) {
+                    $("#mensajeBusqueda").text("");
+                    if (response.estado) {
+                        agregarProductoDetalle(response.data);
+                        $("#txtCodigoProducto").val("");
+                    } else {
+                        $("#mensajeBusqueda").text("Producto no encontrado o sin stock.");
+                    }
+                },
+                error: function () {
+                    $("#mensajeBusqueda").text("Error de conexión al buscar producto.");
+                }
+            });
+        });
+
+        // ----------------------------------------------------
+        // 2. FUNCIÓN PARA AGREGAR PRODUCTO A LA TABLA
+        // ----------------------------------------------------
+        function agregarProductoDetalle(producto) {
+            // Verificar si el producto ya está en la lista
+            var existe = listaProductosVenta.find(x => x.IdProducto == producto.IdProducto);
+
+            if (existe) {
+                // Si existe, incrementa la cantidad (Lógica simple)
+                existe.Cantidad += 1;
+            } else {
+                // Si no existe, lo agrega con cantidad 1
+                listaProductosVenta.push({
+                    IdProducto: producto.IdProducto,
+                    CodigoProducto: producto.Codigo,
+                    DescripcionProducto: producto.Descripcion,
+                    PrecioUnitario: producto.PrecioVenta,
+                    Cantidad: 1,
+                    StockActual: producto.Stock // Guardamos el stock para validar
+                });
+            }
+
+            actualizarTablaDetalle();
+        }
+
+        // ----------------------------------------------------
+        // 3. ACTUALIZAR LA TABLA Y CALCULAR TOTALES
+        // ----------------------------------------------------
+        function actualizarTablaDetalle() {
+            var tbody = $("#tablaDetalle tbody");
+            tbody.empty(); // Limpia la tabla
+            var totalGeneral = 0;
+
+            if (listaProductosVenta.length == 0) {
+                tbody.append('<tr><td colspan="6" class="text-center">No hay productos en el detalle.</td></tr>');
+            }
+
+            $.each(listaProductosVenta, function (index, item) {
+                var subtotal = item.PrecioUnitario * item.Cantidad;
+                totalGeneral += subtotal;
+
+                var fila = '<tr>' +
+                    '<td>' + item.CodigoProducto + '</td>' +
+                    '<td>' + item.DescripcionProducto + '</td>' +
+                    '<td>' + item.PrecioUnitario.toFixed(2) + '</td>' +
+                    // Input para cambiar la cantidad
+                    '<td><input type="number" class="form-control form-control-sm txtCantidad" data-id="' + item.IdProducto + '" value="' + item.Cantidad + '" min="1" max="' + item.StockActual + '"></td>' +
+                    '<td>' + subtotal.toFixed(2) + '</td>' +
+                    '<td><button class="btn btn-danger btn-sm btnEliminar" data-id="' + item.IdProducto + '">X</button></td>' +
+                    '</tr>';
+                tbody.append(fila);
+            });
+
+            // Mostrar el total general
+            $("#lblTotalPagar").text('S/ ' + totalGeneral.toFixed(2));
+        }
+
+        // ----------------------------------------------------
+        // 4. EVENTOS DE LA TABLA (Cambio de Cantidad y Eliminar)
+        // ----------------------------------------------------
+
+        // Delegación de eventos para el input de cantidad
+        $("#tablaDetalle").on("change", ".txtCantidad", function () {
+            var id = $(this).data("id");
+            var nuevaCantidad = parseInt($(this).val());
+
+            var producto = listaProductosVenta.find(x => x.IdProducto == id);
+
+            if (producto && nuevaCantidad > 0 && nuevaCantidad <= producto.StockActual) {
+                producto.Cantidad = nuevaCantidad;
+                actualizarTablaDetalle();
+            } else {
+                // Si la cantidad es inválida, revertir al valor anterior
+                $(this).val(producto.Cantidad);
+                alert("Cantidad inválida o superior al stock disponible.");
+            }
+        });
+
+        // Delegación de eventos para el botón eliminar
+        $("#tablaDetalle").on("click", ".btnEliminar", function () {
+            var id = $(this).data("id");
+            // Filtrar la lista, manteniendo solo los productos que NO tienen el ID a eliminar
+            listaProductosVenta = listaProductosVenta.filter(x => x.IdProducto != id);
+            actualizarTablaDetalle();
+        });
+
+        // ----------------------------------------------------
+        // 5. REGISTRAR VENTA FINAL (AJAX)
+        // ----------------------------------------------------
+        $("#btnRegistrarVenta").on("click", function () {
+            if (listaProductosVenta.length === 0) {
+                alert("Debe agregar al menos un producto para registrar la venta.");
+                return;
+            }
+
+            // Mapear la lista de productos al formato DetalleVenta final
+            var detallesVenta = listaProductosVenta.map(function (item) {
+                return {
+                    IdProducto: item.IdProducto,
+                    Cantidad: item.Cantidad,
+                    PrecioUnitario: item.PrecioUnitario,
+                    TotalLinea: item.PrecioUnitario * item.Cantidad
+                };
+            });
+
+            var totalVenta = parseFloat($("#lblTotalPagar").text().replace('S/ ', ''));
+
+            var ventaData = {
+                TotalVenta: totalVenta,
+                Detalles: detallesVenta
+            };
+
+            // Convertir el objeto JavaScript a cadena JSON
+            var ventaJSON = JSON.stringify(ventaData);
+
+            // Llamada AJAX para registrar la transacción
+            $.ajax({
+                url: "@Url.Action("RegistrarVenta", "Venta")",
+                type: "POST",
+                data: { VentaJSON: ventaJSON },
+                dataType: "json",
+                success: function (response) {
+                    if (response.estado) {
+                        alert("Venta Registrada con Éxito. Boleta N°: " + response.numeroBoleta);
+
+                        // Redirigir a la vista de Boleta
+                        window.location.href = "@Url.Action("Boleta", "Venta")?id=" + response.idVenta;
+                    } else {
+                        alert("Error al registrar: " + response.mensaje);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log(xhr.responseText);
+                    alert("Ocurrió un error al intentar registrar la venta.");
+                }
+            });
+        });
+
+        actualizarTablaDetalle(); // Carga la tabla al inicio
+    });
+    </script>
+}

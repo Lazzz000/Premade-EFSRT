@@ -1,0 +1,116 @@
+﻿@model JOTATECH_SOLUCIONES.Models.Venta
+@{
+    ViewBag.Title = "Comprobante de Venta - " + Model.NumeroBoleta;
+    // Usamos Layout null para controlar la impresión, pero mantenemos el diseño del Layout principal para la vista web
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    /* 1. OCULTAR ELEMENTOS NO DESEADOS AL IMPRIMIR */
+    @@media print {
+        /* Oculta la barra de navegación, el pie de página y los botones de control */
+        .navbar, .footer, .btn-control {
+            display: none !important;
+        }
+        /* Fuerza a mostrar solo el contenido de la boleta */
+        .container {
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        /* Quita el margen de la página web que rodea el contenido */
+        body {
+            background-color: #fff !important;
+            margin: 0;
+            padding: 0;
+        }
+        /* Asegura que el contenido se vea plano */
+        .card, .shadow {
+            border: none !important;
+            box-shadow: none !important;
+        }
+    }
+
+    /* 2. ESTILOS DE BOLETA VISUAL */
+    .boleta-header {
+        text-align: center;
+        border-bottom: 2px solid #000;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+    }
+
+    .boleta-info {
+        font-size: 0.9em;
+    }
+
+    .boleta-table th, .boleta-table td {
+        font-size: 0.9em;
+        padding: 4px;
+    }
+</style>
+
+<div class="container mt-5">
+    <div class="card p-4 shadow">
+
+        <div class="boleta-header">
+            <h2>JOTA TECH Soluciones Tecnológicas</h2>
+            <p>RUC: 10456684969 | Teléfono: 977 205 944</p>
+            <h3>BOLETA DE VENTA ELECTRÓNICA</h3>
+            <h2>N° @Model.NumeroBoleta</h2>
+        </div>
+
+        <div class="row boleta-info mb-3">
+            <div class="col-md-6">
+                <p><strong>Fecha de Emisión:</strong> @Model.FechaVenta.ToString("dd/MM/yyyy")</p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <p><strong>Atendido por:</strong> @Model.NombreUsuario</p>
+            </div>
+        </div>
+
+        <table class="table table-bordered boleta-table">
+            <thead>
+                <tr class="table-secondary">
+                    <th>CANTIDAD</th>
+                    <th>CÓDIGO</th>
+                    <th>DESCRIPCIÓN</th>
+                    <th class="text-end">P. UNIT. (S/)</th>
+                    <th class="text-end">SUBTOTAL (S/)</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var detalle in Model.Detalles)
+                {
+                    <tr>
+                        <td>@detalle.Cantidad</td>
+                        <td>@detalle.CodigoProducto</td>
+                        <td>@detalle.DescripcionProducto</td>
+                        <td class="text-end">@detalle.PrecioUnitario.ToString("N2")</td>
+                        <td class="text-end">@detalle.TotalLinea.ToString("N2")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <div class="row justify-content-end">
+            <div class="col-md-5">
+                <table class="table table-sm table-borderless">
+                    <tr>
+                        <th class="text-end">TOTAL:</th>
+                        <td class="text-end">S/ @Model.TotalVenta.ToString("N2")</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <p class="text-center mt-3 boleta-info">
+            Gracias por su compra.
+        </p>
+
+        <div class="mt-4 btn-control text-center">
+            <button class="btn btn-primary" onclick="window.print()">Imprimir Boleta</button>
+            @Html.ActionLink("Nueva Venta", "Crear", "Venta", null, new { @class = "btn btn-secondary" })
+        </div>
+    </div>
+</div>
+

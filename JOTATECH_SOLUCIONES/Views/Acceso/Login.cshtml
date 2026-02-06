@@ -1,0 +1,65 @@
+﻿@model JOTATECH_SOLUCIONES.Models.Usuario
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Login - JOTA TECH</title>
+    <link href="~/Content/bootstrap.css" rel="stylesheet" />
+    <style>
+        .login-container {
+            margin-top: 10%;
+        }
+    </style>
+</head> 
+<body>
+    <div class="container">
+        <div class="row justify-content-center login-container">
+            <div class="col-md-5">
+                <div class="card shadow-lg p-4 mb-5 bg-white rounded">
+                    <div class="card-body">
+                        <div class="text-center mb-4">
+                            <img src="@Url.Content("~/Content/Images/logo-jotatech.png")"
+                                 alt="JOTA TECH Logo"
+                                 style="height: 200px; display: block; margin: 0 auto 1px;">
+
+                            <h3 class="card-title text-center text-primary" style="font-size: 1.5rem;">
+                                SISTEMA DE VENTAS
+                            </h3>
+                        </div>
+                        @using (Html.BeginForm("Login", "Acceso", FormMethod.Post))
+                        {
+                            <div class="form-group mb-3">
+                                @Html.LabelFor(m => m.Username)
+                                @Html.TextBoxFor(m => m.Username, new { @class = "form-control", placeholder = "Ingrese usuario" })
+                                @Html.ValidationMessageFor(m => m.Username, "", new { @class = "text-danger" })
+                            </div>
+
+                            <div class="form-group mb-4">
+                                @Html.LabelFor(m => m.Clave, "Contraseña")
+                                @Html.PasswordFor(m => m.Clave, new { @class = "form-control", placeholder = "Ingrese contraseña" })
+                                @Html.ValidationMessageFor(m => m.Clave, "", new { @class = "text-danger" })
+                            </div>
+
+                            if (ViewBag.Error != null)
+                            {
+                                <div class="alert alert-danger" role="alert">
+                                    @ViewBag.Error
+                                </div>
+                            }
+
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary btn-block">
+                                    Iniciar Sesión
+                                </button>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+﻿@model List<JOTATECH_SOLUCIONES.Models.Venta>
+@{
+    ViewBag.Title = "Reportes de Ventas";
+}
+
+<h2 class="mt-4">@ViewBag.Title</h2>
+<hr />
+
+<div class="card shadow mb-4">
+    <div class="card-header bg-secondary text-white">
+        Filtro de Reportes por Fechas
+    </div>
+    <div class="card-body">
+        @using (Html.BeginForm("GenerarReporte", "Reporte", FormMethod.Post, new { @class = "row g-3" }))
+        {
+            <div class="col-md-5">
+                <label for="fechaInicio" class="form-label">Fecha de Inicio:</label>
+                <input type="date" class="form-control" id="fechaInicio" name="fechaInicio" required value="@ViewBag.FechaInicio">
+            </div>
+
+            <div class="col-md-5">
+                <label for="fechaFin" class="form-label">Fecha Fin:</label>
+                <input type="date" class="form-control" id="fechaFin" name="fechaFin" required value="@ViewBag.FechaFin">
+            </div>
+
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary w-100">
+                    Generar Reporte
+                </button>
+            </div>
+        }
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger mt-3">@ViewBag.Error</div>
+        }
+    </div>
+</div>
+
+@if (Model != null && Model.Count > 0)
+{
+    <div class="card shadow mb-4 mt-4">
+        <div class="card-header bg-success text-white">
+            Resultados del Reporte (@ViewBag.FechaInicio al @ViewBag.FechaFin)
+        </div>
+        <div class="card-body">
+            <p>Se encontraron **@Model.Count** ventas.</p>
+
+            <button class="btn btn-success mb-3">Descargar a Excel</button>
+
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Boleta N°</th>
+                        <th>Fecha de Venta</th>
+                        <th>Vendedor</th>
+                        <th class="text-end">Total Venta (S/)</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var venta in Model)
+                    {
+                        <tr>
+                            <td>@venta.NumeroBoleta</td>
+                            <td>@venta.FechaVenta.ToShortDateString() @venta.FechaVenta.ToShortTimeString()</td>
+                            <td>@venta.NombreUsuario</td>
+                            <td class="text-end">@venta.TotalVenta.ToString("N2")</td>
+                            <td>@Html.ActionLink("Ver Detalle", "Boleta", "Venta", new { id = venta.IdVenta }, new { @class = "btn btn-info btn-sm", target = "_blank" })</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+else if (Model != null && ViewBag.FechaInicio != null)
+{
+    <div class="alert alert-warning mt-4">
+        No se encontraron ventas para el rango seleccionado (@ViewBag.FechaInicio al @ViewBag.FechaFin).
+    </div>
+}

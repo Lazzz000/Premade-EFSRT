@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36221.1 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JOTATECH_SOLUCIONES", "JOTATECH_SOLUCIONES\JOTATECH_SOLUCIONES.csproj", "{3EA59ED7-A26B-477C-9E14-A2C2F18A8610}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3EA59ED7-A26B-477C-9E14-A2C2F18A8610}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3EA59ED7-A26B-477C-9E14-A2C2F18A8610}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3EA59ED7-A26B-477C-9E14-A2C2F18A8610}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3EA59ED7-A26B-477C-9E14-A2C2F18A8610}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A632D026-CDC8-4964-89C4-DABB54FF8A96}
+	EndGlobalSection
+EndGlobal
