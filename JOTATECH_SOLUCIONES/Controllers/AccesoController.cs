@@ -4,6 +4,8 @@ using JOTATECH_SOLUCIONES.Models; // Asegúrate de que esta línea esté, si no,
 using System.Web.Mvc;
 using System.Web.Security; // Para FormsAuthentication
 
+using JOTATECH_SOLUCIONES.CapaNegocio;
+
 public class AccesoController : Controller
 {
     // GET: Acceso/Login
@@ -24,7 +26,10 @@ public class AccesoController : Controller
             return View(oUsuario);
         }
 
-        Usuario usuarioValidado = new CD_Usuario().ValidarUsuario(oUsuario.Username, oUsuario.Clave);
+
+        //llamamos a CN_Usuario desde la capa de neggocio para que la logica del negocio maneje la validacion
+        
+        Usuario usuarioValidado = new CN_Usuario().ValidarUsuario(oUsuario.Username, oUsuario.Clave);
 
         if (usuarioValidado != null)
         {

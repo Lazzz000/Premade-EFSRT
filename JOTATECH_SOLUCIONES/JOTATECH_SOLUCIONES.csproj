@@ -148,6 +148,8 @@
     <Compile Include="CapaDatos\CD_Reporte.cs" />
     <Compile Include="CapaDatos\CD_Usuario.cs" />
     <Compile Include="CapaDatos\CD_Venta.cs" />
+    <Compile Include="CapaNegocio\CN_Recursos.cs" />
+    <Compile Include="CapaNegocio\CN_Usuario.cs" />
     <Compile Include="Controllers\AccesoController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ProductoController.cs" />
